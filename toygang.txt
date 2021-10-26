@@ -1,0 +1,10 @@
+			Faith	Marked
+			Faith	Marked
+1	a	12800	0	0
+	b	3200	1	0
+2	c	3000	0	1
+	d	1000	1	0
+3	e	4	0	2
+	f	396	1	0
+4	g	0	0	3
+	h	40	1	0
