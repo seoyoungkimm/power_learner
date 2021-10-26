@@ -81,9 +81,14 @@ def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e):
 
 if __name__ == "__main__":
   inputfile = str(sys.argv[1])
-  max_iters = int(sys.argv[2])
-  lr_w = float(sys.argv[3]) # learning rate for weights (0.1)
-  lr_e = float(sys.argv[4]) # learning rate for powers (0.01)
+  if len(sys.argv) > 2:
+    max_iters = int(sys.argv[2])
+    lr_w = float(sys.argv[3]) # learning rate for weights (0.1)
+    lr_e = float(sys.argv[4]) # learning rate for powers (0.01)
+  else:
+    max_iters = int(30000)
+    lr_w = float(0.1) # learning rate for weights (0.1)
+    lr_e = float(0.01)
   tableau = tab.file_open(inputfile)
   cons, powers, weights = tab.cons_extractor(tableau)
   obs_probs, violations = tab.fv_extractor(tableau)
