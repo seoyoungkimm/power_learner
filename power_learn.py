@@ -63,7 +63,7 @@ def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e):
     print('\n')
 
     if len(losses) > 2:
-      if loss > losses[-1]:
+      if losses[-1] > losses[-2]:
         print("converged")
         fig, ax1 = plt.subplots()
         ax1.plot(losses)
