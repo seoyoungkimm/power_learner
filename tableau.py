@@ -23,7 +23,7 @@ def fv_extractor (tableau):
 	all_violations = []
 
 	for line in tableau[1:]:
-		print(line)
+		# print(line)
 		if len(line[0]) > 0:
 			# start a new sublist
 			try:
@@ -35,7 +35,7 @@ def fv_extractor (tableau):
 			freq = [float(line[2])] #[80]
 			# print(freq)
 			violations = [[int(x) if x!='' else int(0) for x in line[3:]]] #[[0, 0]]
-			print(violations)
+			# print(violations)
 		else:
 			freq.append(float(line[2])) # [80, 20]
 			# print(freq)
@@ -50,6 +50,7 @@ def fv_extractor (tableau):
 			prob.append(pair[i]/sum(pair))
 		all_probability.append(prob)
 	all_violations.append(violations)
+	print(all_probability)
 	return np.array(all_probability), np.array(all_violations)
 
 

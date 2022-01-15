@@ -13,7 +13,7 @@ def predict_probs (viols, e, w):
   for tab in harmonies:
     tab_harmonies = []
     for cand in tab:
-      # print(sum(cand)*(-1))
+      print(sum(cand)*(-1))
       tab_harmonies.append(np.exp(sum(cand)*(-1)))
     exp_harmonies.append(tab_harmonies)
   exp_harmonies = np.array(exp_harmonies)
@@ -26,7 +26,6 @@ def predict_probs (viols, e, w):
   return pred
 
 def loss_func (observed_probs, viols, e, w):
-
   pred_probs = predict_probs(viols, e, w)
   pred_probs_flat = np.clip(pred_probs.flatten(), 1e-20, 1)
   observed_probs_flat = observed_probs.flatten()
@@ -43,7 +42,11 @@ def set_to_one(p):
   if p < 1: p = float(1)
   return p
 
-def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e):
+def gaus (w, e, mu_w, mu_e, sig_w=10000, sig_e=10000):
+  penalty = sum( np.square(e - mu_e) ) / (2 * sig_e) + sum( np.square(w - mu_w) ) / (2 * sig_w)
+  return penalty
+
+def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_p, mu_w):
   max_iters = max_iters
   lr_w = lr_w
   lr_e = lr_e
@@ -54,9 +57,11 @@ def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e):
     dLde, dLdw = loss_grad(obs_probs, violations, powers, weights)
     powers = np.subtract(powers, np.multiply(dLde, lr_e))
     powers = np.array(list(map(set_to_one, powers)))
+    # print(powers)
     weights = np.subtract(weights, np.multiply(dLdw, lr_w))
+    # print(weights)
     new_probs = predict_probs(violations, powers, weights)
-    loss = loss_func(obs_probs, violations, powers, weights)
+    loss = loss_func(obs_probs, violations, powers, weights) + gaus(weights, powers, mu_w, mu_p)
     losses.append(loss)
     print(i, "{:.3f}".format(loss), ["{:.3f}".format(i) for i in weights], ["{:.3f}".format(i) for i in powers])
     print(np.round(new_probs, 3))
@@ -91,5 +96,7 @@ if __name__ == "__main__":
     lr_e = float(0.01)
   tableau = tab.file_open(inputfile)
   cons, powers, weights = tab.cons_extractor(tableau)
+  mu_powers = powers
+  mu_weights = weights
   obs_probs, violations = tab.fv_extractor(tableau)
-  learning(obs_probs, violations, powers, weights, max_iters, lr_w, lr_e)
+  learning(obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_powers, mu_weights)
