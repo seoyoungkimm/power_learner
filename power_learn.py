@@ -42,11 +42,15 @@ def set_to_one(p):
   if p < 1: p = float(1)
   return p
 
+def set_to_zero(w):
+  if w < 0: w = float(0)
+  return w
+
 def gaus (w, e, mu_w, mu_e, sig_w=10000, sig_e=10000):
   penalty = sum( np.square(e - mu_e) ) / (2 * sig_e) + sum( np.square(w - mu_w) ) / (2 * sig_w)
   return penalty
 
-def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_p, mu_w):
+def learning (obs_probs, violations, powers, weights, lr_w, lr_e, mu_p, mu_w, max_iters = 100000):
   max_iters = max_iters
   lr_w = lr_w
   lr_e = lr_e
@@ -59,6 +63,7 @@ def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_
     powers = np.array(list(map(set_to_one, powers)))
     # print(powers)
     weights = np.subtract(weights, np.multiply(dLdw, lr_w))
+    weights = np.array(list(map(set_to_zero, weights)))
     # print(weights)
     new_probs = predict_probs(violations, powers, weights)
     loss = loss_func(obs_probs, violations, powers, weights) + gaus(weights, powers, mu_w, mu_p)
@@ -87,16 +92,13 @@ def learning (obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_
 if __name__ == "__main__":
   inputfile = str(sys.argv[1])
   if len(sys.argv) > 2:
-    max_iters = int(sys.argv[2])
-    lr_w = float(sys.argv[3]) # learning rate for weights (0.1)
-    lr_e = float(sys.argv[4]) # learning rate for powers (0.01)
+    lr_w = float(sys.argv[2]) # learning rate for weights (0.1)
+    lr_e = float(sys.argv[3]) # learning rate for powers (0.01)
   else:
-    max_iters = int(30000)
     lr_w = float(0.1) # learning rate for weights (0.1)
     lr_e = float(0.01)
   tableau = tab.file_open(inputfile)
   cons, powers, weights = tab.cons_extractor(tableau)
-  mu_powers = powers
-  mu_weights = weights
+  mu_powers, mu_weights = powers, weights
   obs_probs, violations = tab.fv_extractor(tableau)
-  learning(obs_probs, violations, powers, weights, max_iters, lr_w, lr_e, mu_powers, mu_weights)
+  learning(obs_probs, violations, powers, weights, lr_w, lr_e, mu_powers, mu_weights)

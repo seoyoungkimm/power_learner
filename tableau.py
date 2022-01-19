@@ -13,7 +13,7 @@ def file_open (filepath, div='\t'):
 
 def cons_extractor (readobj): # extracts constraint names and save in a list
 	constraints = [x for x in readobj[0] if len(x)>0]
-	weights = [1.0 for i in range(len(constraints))]
+	weights = [0.0 for i in range(len(constraints))]
 	powers = [1.0 for i in range(len(constraints))]
 	return constraints, np.array(powers), np.array(weights)
 
